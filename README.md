@@ -28,6 +28,7 @@ Også de amerikanske aktiemarkeder er røde. Nasdaq-indekset falder 1,7 pct., me
 ```
 
 ## Inference with the model
+```python
 def qa(question, context):
   inputs = tokenizer.encode_plus(question, context, return_tensors="pt") 
   answer_start_scores, answer_end_scores = model(**inputs)[0], model(**inputs)[1]
