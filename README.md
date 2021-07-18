@@ -74,6 +74,10 @@ for q in questions:
 * Pre-trained BERT was fine-tuned on the machine-translated [SQuADv1.1-da](https://github.com/ccasimiro88/TranslateAlignRetrieve/tree/multilingual/squads-tar/da).
 * Example context credit goes to Dagbladet Børsen A/S.
 
+### Contact
+
+* For information on usage, fine-tuning procedure and more, please reach out on email through [jacobhein.com](https://jacobhein.com/#contact).
+
 ## Reference
 
 * [Pre-trained model by BotXO](https://github.com/botxo/nordic_bert)
