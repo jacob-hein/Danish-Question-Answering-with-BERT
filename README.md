@@ -7,7 +7,8 @@ from transformers import AutoTokenizer, AutoModelForQuestionAnswering
 tokenizer = AutoTokenizer.from_pretrained("jacobshein/danish-bert-botxo-qa-squad")
 model = AutoModelForQuestionAnswering.from_pretrained("jacobshein/danish-bert-botxo-qa-squad")
 ```
-## Inference with the model
+
+## Application with example context
 ```python
 context = """
 Det danske eliteindeks står malet i mørkerødt onsdag eftermiddag, hvor C25-indekset falder over 2,5 pct. 
@@ -24,23 +25,14 @@ men siden har indekset bevæget sig i stik modsatte retning. Det er ikke kun i D
 “Vi har også set udviklingen i Europa er vendt fra at være neutral til at falde en smule nu,” siger Jacob Pedersen. 
 Også de amerikanske aktiemarkeder er røde. Nasdaq-indekset falder 1,7 pct., mens S&P 500 er nede med 0,7 pct. Dow Jones ligger stille omkring nul.
 """
+```
 
+## Inference with the model
 def qa(question, context):
-  # 1. TOKENIZE THE INPUT
-  # note: if you don't include return_tensors='pt' you'll get a list of lists which is easier for 
-  # exploration but you cannot feed that into a model. 
   inputs = tokenizer.encode_plus(question, context, return_tensors="pt") 
-  
-  # 2. OBTAIN MODEL SCORES
-  # the AutoModelForQuestionAnswering class includes a span predictor on top of the model. 
-  # the model returns answer start and end scores for each word in the text
   answer_start_scores, answer_end_scores = model(**inputs)[0], model(**inputs)[1]
   answer_start = torch.argmax(answer_start_scores)
   answer_end = torch.argmax(answer_end_scores) + 1
-
-  # 3. GET THE ANSWER SPAN
-  # once we have the most likely start and end tokens, we grab all the tokens between them
-  # and convert tokens back to words!
   output = tokenizer.convert_tokens_to_string(tokenizer.convert_ids_to_tokens(inputs["input_ids"][0][answer_start:answer_end]))
   return output
 
@@ -51,7 +43,7 @@ questions = ["Hvor mange danske eliteaktier er faldet mere end 3 pct",
              "Hvor meget falder Nasdaq-indekset?",
              "Hvilke selskaber har de værst ramte aktier?",
              'Hvad hedder aktieanalysechefen?'          
-]
+             ]
 
 for q in questions:
   print('Spørgsmål: ',q)
@@ -60,20 +52,20 @@ for q in questions:
 ```
 ## Model output
 ```python
-Spørgsmål:  Hvor mange danske eliteaktier er faldet mere end 3 pct
-Svar:  11
-Spørgsmål:  Hvordan var det danske eliteindeks onsdag eftermiddag?
-Svar:  mørkerødt
-Spørgsmål:  Hvor meget faldte C25-indekset onsdag eftermiddag?
-Svar:  2, 5 pct
-Spørgsmål:  Hvordan ser Nasdaq-indekset ud?
-Svar:  værst
-Spørgsmål:  Hvor meget falder Nasdaq-indekset?
-Svar:  1, 7 pct., mens s [UNK] p 500 er nede med 0, 7 pct
-Spørgsmål:  Hvilke selskaber har de værst ramte aktier?
-Svar:  ambu, ørsted og vestas, som alle dykker over 5 pct. [UNK] det er i særdeleshed de dyre og bæredygtige aktier, der bliver solgt ud af. nar vestas og ørsted
-Spørgsmål:  Hvad hedder aktieanalysechefen?
-Svar:  jacob pedersen
+# Spørgsmål:  Hvor mange danske eliteaktier er faldet mere end 3 pct
+# Svar:  11
+# Spørgsmål:  Hvordan var det danske eliteindeks onsdag eftermiddag?
+# Svar:  mørkerødt
+# Spørgsmål:  Hvor meget faldte C25-indekset onsdag eftermiddag?
+# Svar:  2, 5 pct
+# Spørgsmål:  Hvordan ser Nasdaq-indekset ud?
+# Svar:  værst
+# Spørgsmål:  Hvor meget falder Nasdaq-indekset?
+# Svar:  1, 7 pct., mens s [UNK] p 500 er nede med 0, 7 pct
+# Spørgsmål:  Hvilke selskaber har de værst ramte aktier?
+# Svar:  ambu, ørsted og vestas, som alle dykker over 5 pct. [UNK] det er i særdeleshed de dyre og bæredygtige aktier, der bliver solgt ud af. nar vestas og ørsted
+# Spørgsmål:  Hvad hedder aktieanalysechefen?
+# Svar:  jacob pedersen
 ```
 
 ### Dataset
